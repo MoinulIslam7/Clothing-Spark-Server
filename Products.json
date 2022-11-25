@@ -60,10 +60,10 @@
     {
         "category": "Mans Collections",
         "id": "3",
-        "img": "https://priyoshopbackup.blob.core.windows.net/priyoshop/content/Images/Thumbs/0241784_stripe-polo-shirt-for-men-bb-c_415.jpeg",
+        "img": "https://static-01.daraz.com.bd/p/5b9f5ee3fc52bc37115bc5fbbf4cc44e.jpg",
         "products": [
             {
-                "id": "1",
+                "id": "1",          
                 "product_name": "Polo Shirt",
                 "image": "https://oldnavy.gap.com/Asset_Archive/ONWeb/content/0029/395/868/assets/220800_59_M7651_M_DP_Tops.jpg",
                 "location": "Mirpur, Dhaka",
