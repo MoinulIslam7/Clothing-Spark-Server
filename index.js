@@ -4,6 +4,8 @@ const port = process.env.PORT || 5000;
 require('dotenv').config();
 const app = express();
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+// jwt
+const jwt = require('jsonwebtoken');
 
 
 // middlewares
@@ -14,10 +16,13 @@ app.use(express.json());
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.0tydy0p.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
+
+
 async function run() {
     try {
         const productsCollection = client.db("clothingSpark").collection("productsCategory");
         const usersCollection = client.db("clothingSpark").collection("users");
+        const bookingsCollection = client.db("clothingSpark").collection("bookings");
 
         app.get('/products', async (req, res) => {
             const query = {};
@@ -38,7 +43,32 @@ async function run() {
             const result = await usersCollection.insertOne(user);
             res.send(result);
         });
+        // get users
+        app.get('/users', async (req, res) => {
+            const query = {};
+            const users = await usersCollection.find(query).toArray();
+            res.send(users);
+        });
 
+        // bookings from users
+        app.post('/bookings', async (req, res) => {
+            const booking = req.body;
+            const query = {
+                BuyerName: booking.name,
+                email: booking.email,
+                phone: booking.phone,
+                proudctName: booking.productName,
+                resalePrice: booking.resalePrice,
+                locaiton: booking.location,
+            }
+            const Booked = await bookingsCollection.find(query).toArray();
+            if (Booked.length) {
+              const message = `You Already buy this ${booking.productName}`
+              return res.send({ acknowledge: false, message });
+            }
+            const result = await bookingsCollection.insertOne(booking);
+            res.send(result)
+          });
 
 
     }
