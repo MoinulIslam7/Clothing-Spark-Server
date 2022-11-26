@@ -17,6 +17,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run() {
     try {
         const productsCollection = client.db("clothingSpark").collection("productsCategory");
+        const usersCollection = client.db("clothingSpark").collection("users");
 
         app.get('/products', async (req, res) => {
             const query = {};
@@ -30,6 +31,13 @@ async function run() {
             const categoryProduct = await productsCollection.findOne(query);
             res.send(categoryProduct);
         })
+
+        // set user
+        app.post('/users', async (req, res) => {
+            const user = req.body;
+            const result = await usersCollection.insertOne(user);
+            res.send(result);
+        });
 
 
 
