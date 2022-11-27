@@ -40,6 +40,7 @@ async function run() {
     const bookingsCollection = client.db("clothingSpark").collection("bookings");
     const wishListCollection = client.db("clothingSpark").collection("wishlist");
     const sellerProductsCollection = client.db("clothingSpark").collection("SellerProduct");
+    const advertiseCollection = client.db("clothingSpark").collection("advertised");
 
     app.get('/products', async (req, res) => {
       const query = {};
@@ -109,9 +110,15 @@ async function run() {
         resalePrice: wishlist.resalePrice,
         originalPrice: wishlist.originalPrice
       }
+      const wish = await wishListCollection.find(query).toArray();
+      if (wish.length) {
+        const message = `You Already added this on WishList`
+        return res.send({ acknowledge: false, message });
+      }
       const result = await wishListCollection.insertOne(query);
       res.send(result)
     });
+    // get wishlist
     app.get('/wishlist', async (req, res) => {
       const email = req.query.email;
       // const decodeEmail = req.decoded.email;
@@ -123,6 +130,31 @@ async function run() {
       const wishlist = await wishListCollection.find(query).toArray();
       res.send(wishlist);
     })
+    // add advertise items
+    app.post('/advertise', async (req, res) => {
+      const wishlist = req.body;
+      const advertise = await advertiseCollection.find(wishlist).toArray();
+      if (advertise.length) {
+        const message = `You Already added this on advertised`
+        return res.send({ acknowledge: false, message });
+      }
+      const result = await advertiseCollection.insertOne(wishlist);
+      res.send(result)
+    });
+    app.get('/advertise/:email', async (req, res) => {
+      const email = req.query.email;
+      const query = { email: email };
+      const advertise = await advertiseCollection.find(query).toArray();
+      res.send(advertise);
+    })
+     // delete advertised
+     app.delete("/advertise/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: ObjectId(id) };
+      const result = await advertiseCollection.deleteOne(filter);
+      res.send(result);
+    });
+    
 
     //   jwt
     app.get('/jwt', async (req, res) => {
@@ -144,12 +176,19 @@ async function run() {
       const user = await usersCollection.findOne(query);
       res.send({ isAdmin: user?.status === 'admin' });
   })
-  // check a user is a admin or not
+  // check a user is a seller or not
     app.get('/users/seller/:email', async (req, res) => {
       const email = req.params.email;
       const query = { email }
       const user = await usersCollection.findOne(query);
       res.send({ isSeller: user?.status === 'seller' });
+  })
+  // check a user is a buyer or not
+    app.get('/users/buyer/:email', async (req, res) => {
+      const email = req.params.email;
+      const query = { email }
+      const user = await usersCollection.findOne(query);
+      res.send({ isBuyer: user?.status === 'user' });
   })
      // save product
      app.post("/addproduct", async (req, res) => {
