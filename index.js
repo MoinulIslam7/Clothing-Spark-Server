@@ -144,6 +144,13 @@ async function run() {
       const user = await usersCollection.findOne(query);
       res.send({ isAdmin: user?.status === 'admin' });
   })
+  // check a user is a admin or not
+    app.get('/users/seller/:email', async (req, res) => {
+      const email = req.params.email;
+      const query = { email }
+      const user = await usersCollection.findOne(query);
+      res.send({ isSeller: user?.status === 'seller' });
+  })
      // save product
      app.post("/addproduct", async (req, res) => {
       const product = req.body;
@@ -164,6 +171,13 @@ async function run() {
       const id = req.params.id;
       const filter = { _id: ObjectId(id) };
       const result = await sellerProductsCollection.deleteOne(filter);
+      res.send(result);
+    });
+     // delete user
+     app.delete("/user/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: ObjectId(id) };
+      const result = await usersCollection.deleteOne(filter);
       res.send(result);
     });
 
