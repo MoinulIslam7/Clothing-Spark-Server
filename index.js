@@ -23,6 +23,7 @@ async function run() {
         const productsCollection = client.db("clothingSpark").collection("productsCategory");
         const usersCollection = client.db("clothingSpark").collection("users");
         const bookingsCollection = client.db("clothingSpark").collection("bookings");
+        const wishListCollection = client.db("clothingSpark").collection("wishlist");
 
         app.get('/products', async (req, res) => {
             const query = {};
@@ -69,7 +70,42 @@ async function run() {
             const result = await bookingsCollection.insertOne(booking);
             res.send(result)
           });
+          app.get('/bookings', async (req, res) => {
+            const email = req.query.email;
+            // const decodeEmail = req.decoded.email;
+            // if (email !== decodeEmail) {
+            //   return res.status(403).send({ message: 'forbidden access' });
+            // }
+      
+            const query = { email: email };
+            const bookings = await bookingsCollection.find(query).toArray();
+            res.send(bookings);
+          })
 
+        //   wish list
+        app.post('/wishlist', async (req, res) => {
+            const wishlist = req.body;
+            const query = {
+                name: wishlist.name,
+                email: wishlist.email,
+                productName: wishlist.productName,
+                resalePrice: wishlist.resalePrice,
+                originalPrice: wishlist.originalPrice
+            }
+            const result = await wishListCollection.insertOne(query);
+            res.send(result)
+          });
+          app.get('/wishlist', async (req, res) => {
+            const email = req.query.email;
+            // const decodeEmail = req.decoded.email;
+            // if (email !== decodeEmail) {
+            //   return res.status(403).send({ message: 'forbidden access' });
+            // }
+      
+            const query = { email: email };
+            const wishlist = await wishListCollection.find(query).toArray();
+            res.send(wishlist);
+          })
 
     }
     finally {
