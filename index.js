@@ -152,14 +152,20 @@ async function run() {
     });
 
     // get my products api
-    app.get("/my-products/:email", async (req, res) => {
+    app.get("/myproducts/:email", async (req, res) => {
       const email = req.params.email;
       const filter = { email };
-      const result = await productsCollection.find(filter).toArray();
+      const result = await sellerProductsCollection.find(filter).toArray();
       res.send(result);
     });
 
-
+     // delete product
+     app.delete("/myproducts/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: ObjectId(id) };
+      const result = await sellerProductsCollection.deleteOne(filter);
+      res.send(result);
+    });
 
   }
   finally {
