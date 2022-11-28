@@ -132,13 +132,13 @@ async function run() {
     })
     // add advertise items
     app.post('/advertise', async (req, res) => {
-      const wishlist = req.body;
-      const advertise = await advertiseCollection.find(wishlist).toArray();
+      const advertised = req.body;
+      const advertise = await advertiseCollection.find(advertised).toArray();
       if (advertise.length) {
         const message = `You Already added this on advertised`
         return res.send({ acknowledge: false, message });
       }
-      const result = await advertiseCollection.insertOne(wishlist);
+      const result = await advertiseCollection.insertOne(advertised);
       res.send(result)
     });
     app.get('/advertise/:email', async (req, res) => {
